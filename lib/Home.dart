@@ -32,12 +32,28 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    checkAndRequestUsagePermission();
     requestPermission.requestPermission();
     requestPermission.firebaseInit();
     requestPermission.getAccessToken();
 
   }
-
+  Future<void> checkAndRequestUsagePermission() async {
+    bool? isPermissionGranted = await UsageStats.checkUsagePermission();
+    if (!isPermissionGranted!) {
+      // Prompt user to grant Usage Access permission
+      await UsageStats.grantUsagePermission();
+      // Optionally re-check permission after user returns
+      isPermissionGranted = await UsageStats.checkUsagePermission();
+      if (isPermissionGranted!) {
+        print("Usage Access permission granted");
+      } else {
+        print("Usage Access permission denied");
+      }
+    } else {
+      print("Usage Access permission already granted");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -45,12 +61,6 @@ class _HomeState extends State<Home> {
 
       appBar: AppBar(
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: themeObj.textBlack),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: AutoSizeText(
           title[_selectedIndex],
           style: TextStyle(

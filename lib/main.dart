@@ -20,7 +20,8 @@ void main() async {
     "checkAppUsageLimits",
     frequency: Duration(seconds: 15), // Adjust frequency as needed
   );
-  runApp(MaterialApp(
+
+  runApp(const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Home()));
 }
